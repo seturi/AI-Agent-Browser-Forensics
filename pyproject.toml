@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aabf"
+# Versioning scheme: MAJOR.MINOR.YYMMDD (the third field is the build date).
+version = "1.0.260611"
+description = "AI Agent Browser Forensics — identification, collection, parsing, and analysis toolkit for AI agent browsers (Comet, Fellou, Edge Copilot, BrowserOS, Sigma, Genspark)."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "AABF" }]
+license = { text = "MIT" }
+dependencies = [
+    "typer>=0.12",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+# Pulled in by the parsing module. Kept optional so identification/collection
+# stay dependency-light. NOTE: ccl_chromium_reader is NOT on PyPI — it is
+# installed directly from GitHub (no manual clone needed):
+#   pip install -e ".[parse]"
+parse = [
+    "ccl_chromium_reader @ git+https://github.com/cclgroupltd/ccl_chromium_reader.git",
+]
+# API-reconstruction-based remote collection (network). Optional so the
+# identification/collection/parsing modules stay offline-only.
+api = [
+    "requests>=2.31",
+]
+# Chromium v10 cookie/login decryption (Windows DPAPI + AES-256-GCM). DPAPI is
+# ctypes (no dep); AES-GCM needs cryptography.
+decrypt = [
+    "cryptography>=41",
+]
+# Direct forensic image input (.raw/.001/.dd/.img/.E01/.vmdk/.vhdx). Pure-Python
+# (dissect), so no native libtsk/libewf build needed.
+image = [
+    "dissect.target>=3.20",
+]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+aabf = "aabf.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["aabf*"]
